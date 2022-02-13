@@ -15,7 +15,7 @@ function createProductsList(post){
     let itemSection = document.getElementById('items');
     for( i=0; i < post.length; i++ ){
         let article = document.createElement('article');
-        let productLink = createProductLink(post[i].id);
+        let productLink = createProductLink(post[i]._id);
         
         article.appendChild(
             createProductImg(post[i].imageUrl, post[i].altTxt));
