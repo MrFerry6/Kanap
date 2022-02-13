@@ -5,7 +5,9 @@ fetch(getProductUrl())
     let data = response.json();
     data.then(post =>{
         console.log(post); 
-        let imgContainers = document.getElementsByClassName('item__img');  
+        let imgContainers = document.getElementsByClassName('item__img');
+        let itemQuantity = document.getElementById("quantity");
+        let addToCartButton = document.getElementById('addToCart'); 
     
         imgContainers[0].appendChild(
             createProductImg(post.imageUrl, post.altTxt));
@@ -13,6 +15,20 @@ fetch(getProductUrl())
         addProductPrice(post.price);
         addProductDescription(post.description);
         addProductColors(post.colors);
+        
+        itemQuantity.value = '1';
+
+        addToCartButton.addEventListener(('click'), () => {
+            let select = document.getElementById('colors');
+            let quantity = document.getElementById('quantity');
+            window.location.href = 
+            'cart.html?id=' + getUrlId() + 
+            '&color=' + select.value +
+            '&quantity=' + quantity.value;
+            
+        })
+
+
     })
 })
 .catch(function(error){    
@@ -63,3 +79,5 @@ function createProductError(text){
     h2.textContent = 'Se fue a la mierda: ' + text;
     return h2;
 }
+
+
