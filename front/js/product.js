@@ -1,6 +1,5 @@
 
-
-fetch(getProductUrl())
+fetch(createProductUrl())
 .then(response => {
     let data = response.json();
     data.then(post =>{
@@ -19,16 +18,8 @@ fetch(getProductUrl())
         itemQuantity.value = '1';
 
         addToCartButton.addEventListener(('click'), () => {
-            let select = document.getElementById('colors');
-            let quantity = document.getElementById('quantity');
-            window.location.href = 
-            'cart.html?id=' + getUrlId() + 
-            '&color=' + select.value +
-            '&quantity=' + quantity.value;
-            
+            goToCart();            
         })
-
-
     })
 })
 .catch(function(error){    
@@ -38,16 +29,15 @@ fetch(getProductUrl())
 
 
 
-function getUrlId(){
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const id = urlParams.get('id');
-    return id;
+function goToCart() {
+    let select = document.getElementById('colors');
+    let quantity = document.getElementById('quantity');
+    window.location.href =
+        'cart.html?id=' + getUrlId() +
+        '&color=' + select.value +
+        '&quantity=' + quantity.value;
 }
-function getProductUrl(){
-    const  product = 'http://localhost:3000/api/products/' + getUrlId();
-    return product;
-}
+
 function createProductImg(src, alt){    
     let img = document.createElement('img');   
     img.src = src;
@@ -74,6 +64,7 @@ function addProductDescription(text){
         select.appendChild(option);
     }
 }
+
 function createProductError(text){
     let h2 = document.createElement('h2');
     h2.textContent = 'Se fue a la mierda: ' + text;
@@ -81,3 +72,13 @@ function createProductError(text){
 }
 
 
+function getUrlId(){
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const id = urlParams.get('id');
+    return id;
+}
+function createProductUrl(){
+    const  product = 'http://localhost:3000/api/products/' + getUrlId();
+    return product;
+}
