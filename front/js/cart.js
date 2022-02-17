@@ -1,6 +1,12 @@
 //localStorage.clear()
 storeItem(createProductObject());
+clearUrl();
 
+function clearUrl(){
+    if(createProductObject() !=  null){
+        window.location.href = 'http://127.0.0.1:5500/front/html/cart.html';
+    }
+}
 
 function storeItem(product){
     if(product !==null){

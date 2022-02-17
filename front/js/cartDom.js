@@ -16,7 +16,6 @@ function launchFetch(storedProduct){
 }
 
 function createProductCart(product, storedProduct) { 
-        
         let cartIems = document.getElementById('cart__items');
         let article = createArticle(product);
         article.append(createImage(product));
@@ -96,12 +95,9 @@ function createItemContentSettings(storedProduct){
     deleteOption.textContent ='delete';
     deleteOption.className = 'deleteItem';
 
-    quantityInput.addEventListener('input', () => {      
-        let input = document.getElementById('input_' + id);
-        let product = JSON.parse(localStorage.getItem(id));
-        product.quantity = input.value;
-        console.log(product.quantity, input.value)
-        localStorage.setItem(id, JSON.stringify(product));
+    quantityInput.addEventListener('input', () => { 
+        checkValue(quantityInput);     
+        updateCartQuantity(id);
 
     })
     deleteOption.addEventListener(('click'), () =>  {        
@@ -114,6 +110,14 @@ function createItemContentSettings(storedProduct){
     
     return itemContentSettings;
 }
+function updateCartQuantity(id) {
+    let input = document.getElementById('input_' + id);
+    let product = JSON.parse(localStorage.getItem(id));
+    product.quantity = input.value;
+    console.log(product.quantity, input.value);
+    localStorage.setItem(id, JSON.stringify(product));
+}
+
 function removeFromCart(product) {
     let article = document.getElementById(product.id);
     localStorage.removeItem(product.id + '_' + product.color);
@@ -123,4 +127,14 @@ function removeFromCart(product) {
 function createProductUrl(id){
     const  product = 'http://localhost:3000/api/products/' + id;
     return product;
+}
+
+function checkValue(input){
+    console.log(input.value);
+    if (input.value < 1){
+        input.value = 1;
+    }
+    if (input.value > 100){
+        input. value = 100;
+    }
 }
