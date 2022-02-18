@@ -55,7 +55,7 @@ function createItemContent(product, storedProduct){
     let itemContentContainer = document.createElement('div');
     itemContentContainer.className = 'cart__item__content';
     itemContentContainer.append(CreateItemContentDescription(product, storedProduct));
-    itemContentContainer.append(createItemContentSettings(storedProduct));
+    itemContentContainer.append(createItemContentSettings(product, storedProduct));
     return itemContentContainer;
 }
 
@@ -63,17 +63,18 @@ function CreateItemContentDescription(product, storedProduct) {
     let itemContentDescription = document.createElement('div');
     let itemContentName = document.createElement('h2');
     let itemContentColor = document.createElement('p');
-    let itemContentPrize = document.createElement('p');
+    let itemContentPrice = document.createElement('p');
     itemContentName.textContent = product.name;
     itemContentColor.textContent = storedProduct.color;
-    itemContentPrize.textContent = '93939'
+    itemContentPrice.id = 'price';
+    itemContentPrice.textContent = calculatePrice(product.price, storedProduct.quantity);
     itemContentDescription.className = 'cart__item__content__description';
 
     itemContentDescription.append(
-        itemContentName, itemContentColor, itemContentPrize);
+        itemContentName, itemContentColor, itemContentPrice);
     return itemContentDescription;
 }
-function createItemContentSettings(storedProduct){
+function createItemContentSettings(product, storedProduct){
     let itemContentSettings = document.createElement('div');
     let itemContentSettingsQuantity = document.createElement('div');
     let quantityTitle = document.createElement('p');
@@ -96,9 +97,10 @@ function createItemContentSettings(storedProduct){
     deleteOption.className = 'deleteItem';
 
     quantityInput.addEventListener('input', () => { 
+        let itemContentPrice = document.getElementById('price');    
         checkValue(quantityInput);     
         updateCartQuantity(id);
-
+        itemContentPrice.textContent = calculatePrice(quantityInput.value, product.price);
     })
     deleteOption.addEventListener(('click'), () =>  {        
         removeFromCart(storedProduct);
@@ -114,10 +116,11 @@ function updateCartQuantity(id) {
     let input = document.getElementById('input_' + id);
     let product = JSON.parse(localStorage.getItem(id));
     product.quantity = input.value;
-    console.log(product.quantity, input.value);
     localStorage.setItem(id, JSON.stringify(product));
 }
-
+function calculatePrice(price, quantity){
+    return (parseInt(price) * parseInt(quantity)).toString();
+}
 function removeFromCart(product) {
     let article = document.getElementById(product.id);
     localStorage.removeItem(product.id + '_' + product.color);
@@ -130,7 +133,6 @@ function createProductUrl(id){
 }
 
 function checkValue(input){
-    console.log(input.value);
     if (input.value < 1){
         input.value = 1;
     }

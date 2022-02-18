@@ -3,7 +3,6 @@ fetch(createProductUrl())
 .then(response => {
     let data = response.json();
     data.then(post =>{
-        console.log(post); 
         let imgContainers = document.getElementsByClassName('item__img');
         let itemQuantity = document.getElementById("quantity");
         let addToCartButton = document.getElementById('addToCart'); 
@@ -80,7 +79,6 @@ function createProductError(text){
 }
 
 function checkValue(input){
-    console.log(input.value);
     if (input.value < 1){
         input.value = 1;
     }
