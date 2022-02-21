@@ -15,12 +15,18 @@ function launchFetch(storedProduct){
     })
 }
 
-function createProductCart(product, storedProduct) { 
+function createProductCart(product, storedProduct) {   
         let cartIems = document.getElementById('cart__items');
-        let article = createArticle(product);
+        let article = createArticle(product);        
+        let itemContentTotaltQuantity = document.getElementById('totalQuantity');
+        let itemContentTotaltPrice  = document.getElementById('totalPrice');
+        
         article.append(createImage(product));
         article.append(createItemContent(product, storedProduct));
         cartIems.append(article);
+        itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
+        itemContentTotaltPrice.textContent = getTotalPrice().toString();
+        
     }
 
 
@@ -63,10 +69,12 @@ function CreateItemContentDescription(product, storedProduct) {
     let itemContentDescription = document.createElement('div');
     let itemContentName = document.createElement('h2');
     let itemContentColor = document.createElement('p');
-    let itemContentPrice = document.createElement('p');
+    let itemContentPrice = document.createElement('p');   
+    let id = storedProduct.id + '_' + storedProduct.color;
+
     itemContentName.textContent = product.name;
     itemContentColor.textContent = storedProduct.color;
-    itemContentPrice.id = 'price';
+    itemContentPrice.id = 'price' + id;
     itemContentPrice.textContent = calculatePrice(product.price, storedProduct.quantity);
     itemContentDescription.className = 'cart__item__content__description';
 
@@ -81,7 +89,9 @@ function createItemContentSettings(product, storedProduct){
     let quantityInput = document.createElement('input');
     let deleteContainer = document.createElement('div');
     let deleteOption = document.createElement('p');    
-    let id = storedProduct.id + '_' + storedProduct.color;
+    let id = storedProduct.id + '_' + storedProduct.color;    
+    let itemContentTotaltQuantity = document.getElementById('totalQuantity');
+    let itemContentTotaltPrice  = document.getElementById('totalPrice');
 
     itemContentSettings.className = 'cart__item__content__settings';
     quantityTitle.textContent = 'Qte :';
@@ -97,13 +107,17 @@ function createItemContentSettings(product, storedProduct){
     deleteOption.className = 'deleteItem';
 
     quantityInput.addEventListener('input', () => { 
-        let itemContentPrice = document.getElementById('price');    
+        let itemContentPrice = document.getElementById('price' + id);
         checkValue(quantityInput);     
         updateCartQuantity(id);
         itemContentPrice.textContent = calculatePrice(quantityInput.value, product.price);
+        itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
+        itemContentTotaltPrice.textContent = getTotalPrice().toString();
     })
     deleteOption.addEventListener(('click'), () =>  {        
         removeFromCart(storedProduct);
+        itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
+        itemContentTotaltPrice.textContent = getTotalPrice().toString();
     })
 
     itemContentSettingsQuantity.append(quantityTitle,quantityInput);
@@ -120,6 +134,30 @@ function updateCartQuantity(id) {
 }
 function calculatePrice(price, quantity){
     return (parseInt(price) * parseInt(quantity)).toString();
+}
+function getTotalQuantity(){
+    let storageProducts =JSON.parse(JSON.stringify(localStorage));
+    let totalQuantity = 0;
+    for (var [key, value] of Object.entries(storageProducts)){       
+        let storedProduct = JSON.parse(value);
+        totalQuantity = totalQuantity + parseInt(storedProduct.quantity);
+    }
+    return totalQuantity;
+}
+function getTotalPrice(){   
+    let storageProducts =JSON.parse(JSON.stringify(localStorage));
+
+    let totalPrice = 0;
+    for (var [key, value] of Object.entries(storageProducts)){   
+        let storedProduct = JSON.parse(value);           
+        let id = storedProduct.id + '_' + storedProduct.color; 
+        let itemPrice = document.getElementById('price' + id);
+
+        if(itemPrice !== null){
+        totalPrice = totalPrice + parseInt(itemPrice.textContent);}
+    }
+    
+    return totalPrice;
 }
 function removeFromCart(product) {
     let article = document.getElementById(product.id);
