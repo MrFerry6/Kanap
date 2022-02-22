@@ -1,32 +1,54 @@
-let orderButton = document.getElementById('order');
 
 
-orderButton.addEventListener('invalid', (error) =>
-{
-    alert(error.target.value);
-});
-orderButton.addEventListener('click', (event) => {
 
-    const contact = {
-        firstName : document.getElementById('firstName').value,
-        lastName : document.getElementById('lastName').value,
-        address : document.getElementById('address').value,
-        city : document.getElementById('city').value,
-        email : document.getElementById('email').value
+if(getUrlParameter('firstName') !== null){
+
+    fetch("http://localhost:3000/api/products/order",{  
+
+            method : 'post',
+
+            body :JSON.stringify({
+                contact : {
+                    firstName : getUrlParameter('firstName'),
+                    lastName : getUrlParameter('lastName'),
+                    address : getUrlParameter('address'),
+                    city : getUrlParameter('city'),
+                    email : getUrlParameter('email')                    
+                },
+                products : getProductsIds()
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        
+        // Converting to JSON
+        .then(response => {
+            let data = response.json();
+            data.then(post =>{
+                if (response.ok === true){
+                
+                    localStorage.clear();
+
+                    window.location.href =
+                    'confirmation.html?orderId=' + post.orderId;
+            }
+            })
+        })
+ 
     }
+function getUrlParameter(key){
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const parameter = urlParams.get(key);
+    return parameter;
+}
+function getProductsIds(){
     let products = [];
-    
     localStorageProducts = JSON.parse(JSON.stringify(localStorage));
     for (var [key, value] of Object.entries(localStorageProducts)){
-        products.push(value.id);
+        let product =JSON.parse(value);
+        products.push(product.id);
     }
-
-    
-    fetch('http://localhost:3000/api/products/order')
-    
-    .then(response => {
-            window.location.href =
-            'confirmation.html'  
-        
-    })
-})
+    return products;
+}
