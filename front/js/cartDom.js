@@ -17,11 +17,10 @@ function launchFetch(storedProduct){
 
 function createProductCart(product, storedProduct) {   
         let cartIems = document.getElementById('cart__items');
-        let article = createArticle(product);        
+        let article = createArticle(product,storedProduct);        
         let itemContentTotaltQuantity = document.getElementById('totalQuantity');
         let itemContentTotaltPrice  = document.getElementById('totalPrice');
-        
-        article.append(createImage(product));
+        article.append(createImage(product, storedProduct));
         article.append(createItemContent(product, storedProduct));
         cartIems.append(article);
         itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
@@ -31,10 +30,10 @@ function createProductCart(product, storedProduct) {
 
 
 
-function createArticle(product) {
+function createArticle(product, storedProduct) {
     let article = document.createElement('article');
     article.class = 'cart__item';
-    article.id = product._id;
+    article.id = product._id + '_' + storedProduct.color;
     article.color = product.color;
     return article;
     }
@@ -160,7 +159,7 @@ function getTotalPrice(){
     return totalPrice;
 }
 function removeFromCart(product) {
-    let article = document.getElementById(product.id);
+    let article = document.getElementById(product.id + '_' + product.color);
     localStorage.removeItem(product.id + '_' + product.color);
     article.remove();
 }

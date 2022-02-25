@@ -22,7 +22,6 @@ if(getUrlParameter('firstName') !== null){
             }
         })
         
-        // Converting to JSON
         .then(response => {
             let data = response.json();
             data.then(post =>{
