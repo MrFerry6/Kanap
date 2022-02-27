@@ -1,17 +1,24 @@
-
+/*Call to fetch funtion calling 
+to api for the products array.*/
 fetch('http://localhost:3000/api/products/')
+
+/*A for loop iterates trough the products and 
+  create the Doom for each. */
 .then(response => {
     let data = response.json();
     data.then(post =>{ 
-        createProductsList(post);
+        generateProductsDoom(post);
     })  
 })
+
+/*Catch the errors from the api.*/
 .catch(function(error){    
-    let itemSection = document.getElementById('items');
-    itemSection.appendChild(createProductError(error.message));
+    createProductError(error.message);
 })
 
-function createProductsList(post){
+/*A for loop iterates trough the products and 
+  create the Doom for each. */
+function generateProductsDoom(post){
     let itemSection = document.getElementById('items');
     for( i=0; i < post.length; i++ ){
         let article = document.createElement('article');
@@ -29,31 +36,43 @@ function createProductsList(post){
         itemSection.appendChild(productLink);
     }
 }
+
+/*Return a linck element that redirect to product
+  page whit the Id of the selected product. */
 function createProductLink(id){
     let productLink = document.createElement('a');
     productLink.href = './product.html?id=' + id;
     return productLink;
 }
+
+/*Return the image element. */
 function createProductImg(src, alt){
     let img = document.createElement('img');
     img.src = src;
     img.alt = alt;
     return img;
 }
+
+/*Return an h3 element with the name of 
+  the product. */
 function createProductName(text){
     let h3 = document.createElement('h3');
     h3.className = 'productName';
     h3.textContent = text;
     return h3;
 }
+
+/*Return a p element with the 
+  description of the product. */
 function createProductDescription(text){
     let p = document.createElement('p');
     p.className = 'productName';
     p.textContent = text;
     return p;
 }
-function createProductError(text){
-    let h2 = document.createElement('h2');
-    h2.textContent = 'Se fue a la mierda: ' + text;
-    return h2;
+
+/*Generate an alert with the error 
+  description. */
+function createProductError(text){  alert(
+        "ERROR: " + text);
 }

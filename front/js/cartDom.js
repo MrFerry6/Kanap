@@ -1,10 +1,14 @@
 localStorageProducts = JSON.parse(JSON.stringify(localStorage));
 
+/*loop to iterate for each product at local storage to 
+  launch the fetch */
 for (var [key, value] of Object.entries(localStorageProducts)){
     let storedProduct = JSON.parse(value);
     launchFetch(storedProduct);
 }
 
+/*Call to fectch whit the product id paramenter,
+  then call create the product Doom whit the product.  */
 function launchFetch(storedProduct){    
     fetch(createProductUrl(storedProduct.id))
     .then(response => {
@@ -13,8 +17,13 @@ function launchFetch(storedProduct){
             createProductCart(post, storedProduct);
         })  
     })
+    /*Catch the errors from the api.*/
+    .catch(function(error){ 
+        createProductError(error.message);
+})
 }
 
+/*Generate the product Doom items. */
 function createProductCart(product, storedProduct) {   
         let cartIems = document.getElementById('cart__items');
         let article = createArticle(product,storedProduct);        
@@ -29,26 +38,31 @@ function createProductCart(product, storedProduct) {
     }
 
 
-
+/*Returns an article item for the product. */
 function createArticle(product, storedProduct) {
     let article = document.createElement('article');
     article.class = 'cart__item';
     article.id = product._id + '_' + storedProduct.color;
     article.color = product.color;
     return article;
-    }
-    
+}
+
+/*Returns an image container with the img element. */    
 function createImage(product) {
     let imageContainer = createImageContainer();
     let img = createImg(product);
     imageContainer.append(img);
     return imageContainer;
 }
+
+/*Returns an image container. */
 function createImageContainer() {
     let imageContainer = document.createElement('div');
     imageContainer.className = 'cart__item__img';
     return imageContainer;
 }
+
+/*Returns an img element. */
 function createImg(product) {
     let img = document.createElement('img');
     img.alt = product.altTxt;
@@ -56,6 +70,7 @@ function createImg(product) {
     return img;
 }
 
+/*Returns product content Dom */
 function createItemContent(product, storedProduct){    
     let itemContentContainer = document.createElement('div');
     itemContentContainer.className = 'cart__item__content';
@@ -64,6 +79,7 @@ function createItemContent(product, storedProduct){
     return itemContentContainer;
 }
 
+/*Return product description section Dom */
 function CreateItemContentDescription(product, storedProduct) {
     let itemContentDescription = document.createElement('div');
     let itemContentName = document.createElement('h2');
@@ -81,6 +97,8 @@ function CreateItemContentDescription(product, storedProduct) {
         itemContentName, itemContentColor, itemContentPrice);
     return itemContentDescription;
 }
+
+/*Returns Product Settings Dom' */
 function createItemContentSettings(product, storedProduct){
     let itemContentSettings = document.createElement('div');
     let itemContentSettingsQuantity = document.createElement('div');
@@ -94,30 +112,12 @@ function createItemContentSettings(product, storedProduct){
 
     itemContentSettings.className = 'cart__item__content__settings';
     quantityTitle.textContent = 'Qte :';
-    quantityInput.type = 'number';
-    quantityInput.className = 'itemQuantity';
-    quantityInput.name = 'itemQuantity';
-    quantityInput.min = '1';
-    quantityInput.max = '100';
-    quantityInput.id = 'input_' + id;
-    quantityInput.value = storedProduct.quantity;
+    setQuantityInput(quantityInput, id, storedProduct);
     deleteContainer.className = 'cart__item__content__settings__delete';
-    deleteOption.textContent ='delete';
-    deleteOption.className = 'deleteItem';
+    setDeleteOption(deleteOption);
 
-    quantityInput.addEventListener('input', () => { 
-        let itemContentPrice = document.getElementById('price' + id);
-        checkValue(quantityInput);     
-        updateCartQuantity(id);
-        itemContentPrice.textContent = calculatePrice(quantityInput.value, product.price);
-        itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
-        itemContentTotaltPrice.textContent = getTotalPrice().toString();
-    })
-    deleteOption.addEventListener(('click'), () =>  {        
-        removeFromCart(storedProduct);
-        itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
-        itemContentTotaltPrice.textContent = getTotalPrice().toString();
-    })
+    setQuantityInputListener(quantityInput, id, product, itemContentTotaltQuantity, itemContentTotaltPrice);
+    setDeleteOptionListener(deleteOption, storedProduct, itemContentTotaltQuantity, itemContentTotaltPrice);
 
     itemContentSettingsQuantity.append(quantityTitle,quantityInput);
     deleteContainer.append(deleteOption);
@@ -125,15 +125,61 @@ function createItemContentSettings(product, storedProduct){
     
     return itemContentSettings;
 }
+
+/*Add the click listener to delete a product from the stored, 
+  and update the quantity and price at Dom. */
+function setDeleteOptionListener(deleteOption, storedProduct, itemContentTotaltQuantity, itemContentTotaltPrice) {
+    deleteOption.addEventListener(('click'), () => {
+        removeFromCart(storedProduct);
+        itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
+        itemContentTotaltPrice.textContent = getTotalPrice().toString();
+    });
+}
+
+/*Add the input listener to input element,
+  updating price, quantity and total price at the Dom.*/
+function setQuantityInputListener(quantityInput, id, product, itemContentTotaltQuantity, itemContentTotaltPrice) {
+    quantityInput.addEventListener('input', () => {
+        let itemContentPrice = document.getElementById('price' + id);
+        checkValue(quantityInput);
+        updateCartQuantity(id);
+        itemContentPrice.textContent = calculatePrice(quantityInput.value, product.price);
+        itemContentTotaltQuantity.textContent = getTotalQuantity().toString();
+        itemContentTotaltPrice.textContent = getTotalPrice().toString();
+    });
+}
+
+/*Set the parameters at the delete option element. */
+function setDeleteOption(deleteOption) {
+    deleteOption.textContent = 'delete';
+    deleteOption.className = 'deleteItem';
+}
+
+/*Set the parameters at the quantityInput element. */
+function setQuantityInput(quantityInput, id, storedProduct) {
+    quantityInput.type = 'number';
+    quantityInput.className = 'itemQuantity';
+    quantityInput.name = 'itemQuantity';
+    quantityInput.min = '1';
+    quantityInput.max = '100';
+    quantityInput.id = 'input_' + id;
+    quantityInput.value = storedProduct.quantity;
+}
+
+/*update the product quantity at the local storage*/
 function updateCartQuantity(id) {
     let input = document.getElementById('input_' + id);
     let product = JSON.parse(localStorage.getItem(id));
     product.quantity = input.value;
     localStorage.setItem(id, JSON.stringify(product));
 }
+
+/*Returns the price of the product by quantity. */
 function calculatePrice(price, quantity){
     return (parseInt(price) * parseInt(quantity)).toString();
 }
+
+/*Returns the total quantity of all products. */
 function getTotalQuantity(){
     let storageProducts =JSON.parse(JSON.stringify(localStorage));
     let totalQuantity = 0;
@@ -143,6 +189,8 @@ function getTotalQuantity(){
     }
     return totalQuantity;
 }
+
+/*Returns the total price of the products */
 function getTotalPrice(){   
     let storageProducts =JSON.parse(JSON.stringify(localStorage));
 
@@ -158,17 +206,24 @@ function getTotalPrice(){
     
     return totalPrice;
 }
+
+/*Remove a product from the cart */
 function removeFromCart(product) {
     let article = document.getElementById(product.id + '_' + product.color);
     localStorage.removeItem(product.id + '_' + product.color);
     article.remove();
 }
 
+/*Returns an url for the product. */
 function createProductUrl(id){
     const  product = 'http://localhost:3000/api/products/' + id;
     return product;
 }
 
+/*Is called by Input EventListener.
+  Check that the value at the input
+  is between 1 and 100, even the user
+  change it by the keyboard*/
 function checkValue(input){
     if (input.value < 1){
         input.value = 1;
@@ -176,4 +231,10 @@ function checkValue(input){
     if (input.value > 100){
         input. value = 100;
     }
+}
+
+/*Generate an alert with the error 
+  description. */
+  function createProductError(text){  alert(
+    "ERROR: " + text);
 }
