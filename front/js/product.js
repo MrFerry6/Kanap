@@ -97,8 +97,8 @@ function addProductColors(colors){
 
 /*Generate an alert with the error 
   description. */
-function createProductError(text){  alert(
-    "ERROR: " + text);
+function createProductError(text){  
+    alert("ERROR: " + text);
 }
 
 /*Is called by Input EventListener.

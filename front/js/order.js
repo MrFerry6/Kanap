@@ -1,7 +1,9 @@
-/*if at the url exist a firstName parameter,
-will call the fetch for made an order at the api,
-implemeting the order paramameters at the fetch. */
-if(getUrlParameter('firstName') !== null){
+/*if at the url exist a firstName parameter, and
+  at the local storage exist products,
+  will call the fetch for made an order at the api,
+  implemeting the order paramameters at the fetch. */
+console.log( localStorageStatus());
+if(getUrlParameter('firstName') !== null && localStorageStatus() === true){
 
     fetch("http://localhost:3000/api/products/order",{  
 
@@ -56,4 +58,15 @@ function getProductsIds(){
         products.push(product.id);
     }
     return products;
+}
+/*Check if exist products at localestorage.
+  Send a alert message if is empty. */
+function localStorageStatus(){
+    let localStorageProducts = JSON.parse(JSON.stringify(localStorage));
+    if(localStorage.length === 0){
+        alert('Cart is empty, please add Items.')
+        return false;
+    }else{
+        return true;
+    }
 }
