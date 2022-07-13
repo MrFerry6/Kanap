@@ -1,6 +1,8 @@
 # Kanap #
 
-This is the front end and back end server for Project 5 of the Web Developer path.
+•	Build an e-commerce Website with JavaScript. 
+
+A Front-End solution for an e-commerce site with an adaptative DOM developed in JavaScript that consist in a dynamic interface with the capacity to display data models and basic operations to made possible to the users do orders, providing validate data to interact with an API from a pre-existing Back-End solution.
 
 ### Back end Prerequisites ###
 
